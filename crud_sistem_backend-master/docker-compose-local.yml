@@ -1,0 +1,15 @@
+---
+version: '3.7'
+
+services:
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres_backend_crud
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: database_salida
+    ports:
+      - '5432:5432'
+    restart: on-failure
