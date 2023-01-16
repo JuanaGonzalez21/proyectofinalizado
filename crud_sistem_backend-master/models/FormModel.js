@@ -23,11 +23,7 @@ const FormModel = db.define('datos_agente',{
     consecutivo:{type: DataTypes.INTEGER},
     n_consecutivo: {type: DataTypes.STRING},
     area_envia : {type: DataTypes.STRING},
-    equipo: {type: DataTypes.STRING},
-    marca:{type: DataTypes.STRING},
-    modelo: {type: DataTypes.STRING},
-    serial:{type: DataTypes.STRING},
-    placa:{type: DataTypes.STRING}
+    equipos: {type: DataTypes.JSON},
 
 }, {
     timestamps: false,
