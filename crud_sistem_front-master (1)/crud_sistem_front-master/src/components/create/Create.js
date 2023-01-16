@@ -10,6 +10,7 @@ import moment from 'moment';
 
 import './Crear.css'
 import api from '../../servidor/api'
+import Cloneda from './Cloneda'
 
 
 const Create = () => {
@@ -26,11 +27,8 @@ const Create = () => {
   const [consecutivo, setConsecutivo] = useState('');
   const [n_consecutivo, setN_consecutivo] = useState('');
   const [area_envia, setArea_envia] = useState('');
-  const [equipo, setEquipo] = useState('');
-  const [marca, setMarca] = useState('');
-  const [modelo, setModelo] = useState('');
-  const [serial, setSerial] = useState('');
-  const [placa, setPlaca] = useState('');
+  const [inputDisp, setInputDisp] = useState([{ equipo: '', marca: '', modelo: '', serial: '', placa: '' }]);
+
   const navigate = useNavigate()
 
 
@@ -39,8 +37,6 @@ const Create = () => {
   useEffect(() => {
     getOrdenes()
   }, []);
-
-  
 
 
   const getOrdenes = async () => {
@@ -52,7 +48,7 @@ const Create = () => {
 
   const [agentedos, setAgentedos] = useState('');
 
-useEffect(() => {
+  useEffect(() => {
     if (agente_envia == 'Andres Cepeda') setAgentedos("AC")
     if (agente_envia == 'Duvan Gonzalez') setAgentedos("DG")
     if (agente_envia == 'Rafael Mindiola') setAgentedos("RF")
@@ -61,7 +57,18 @@ useEffect(() => {
     if (agente_envia == 'Juana Gonzalez') setAgentedos("JG")
 
     setN_consecutivo(consecutivo + agentedos)
-  }, [agente_envia,agentedos])
+  }, [agente_envia, agentedos])
+
+  const handleFormChange = (index, event) => {
+    let data = [...inputDisp];
+    data[index][event.target.name] = event.target.value;
+    setInputDisp(data);
+  }
+
+  const addFields = () => {
+    let newfield = { equipo: '', marca: '' }
+    setInputDisp([...inputDisp, newfield])
+  }
 
   const store = async (e) => {
     e.preventDefault()
@@ -69,6 +76,7 @@ useEffect(() => {
     //Conversion de fecha
     setFecha_salida(fecha_salida.toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }))
     await axios.post(Api + "/create",
+
       {
         ticket_problema: ticket_problema,
         ticket_envio: ticket_envio,
@@ -82,11 +90,7 @@ useEffect(() => {
         consecutivo: consecutivo,
         n_consecutivo: n_consecutivo,
         area_envia: area_envia,
-        equipo: equipo,
-        marca: marca,
-        modelo: modelo,
-        serial: serial,
-        placa: placa
+        equipos: inputDisp,
 
       })
     navigate('/')
@@ -100,6 +104,7 @@ useEffect(() => {
             <ToastBody className="espace__none" >
               <div className="container__form">
                 <Form onSubmit={store}  >
+                  {/* HEADER DEL FORMULARIO */}
                   <Row>
                     <div className="title__crear">
                       <h3> Registro de ordenes de salida</h3>
@@ -107,7 +112,7 @@ useEffect(() => {
                         <div className="end__crear">
                           <h5>Consecutivo: </h5>
                           <h6>
-                            <input readOnly className="input__crear" value={consecutivo}
+                            <input className="input__crear" value={consecutivo}
                               onChange={(e) => setConsecutivo(e.target.value)}
                               type='text' />
                           </h6>
@@ -127,6 +132,8 @@ useEffect(() => {
                       </div>
                     </div>
                   </Row>
+                  {/* HEADER DEL FORMULARIO ENDS */}
+                  {/* INPUTS */}
                   <Row>
                     <Col md={4}>
                       <FormGroup >
@@ -165,40 +172,63 @@ useEffect(() => {
                         type='text' />
                     </Col>
                   </Row>
-                  <FormGroup>
-                    <Row>
-                      <Col md={3}>
-                        <Label for="exampleAddress">Equipo: </Label>
-                        <Input className="input__crear" value={equipo}
-                          onChange={(e) => setEquipo(e.target.value)}
-                          type='text' />
-                      </Col>
-                      <Col md={2}>
-                        <Label for="exampleAddress">Marca:</Label>
-                        <Input className="input__crear" value={marca}
-                          onChange={(e) => setMarca(e.target.value)}
-                          type='text' />
-                      </Col>
-                      <Col md={2}>
-                        <Label for="exampleAddress">Modelo</Label>
-                        <Input className="input__crear" value={modelo}
-                          onChange={(e) => setModelo(e.target.value)}
-                          type='text' />
-                      </Col>
-                      <Col md={2}>
-                        <Label for="exampleAddress">Serial</Label>
-                        <Input className="input__crear" value={serial}
-                          onChange={(e) => setSerial(e.target.value)}
-                          type='text' />
-                      </Col>
-                      <Col md={3}>
-                        <Label for="exampleAddress">Placa</Label>
-                        <Input className="input__crear" value={placa}
-                          onChange={(e) => setPlaca(e.target.value)}
-                          type='text' />
-                      </Col>
-                    </Row>
-                  </FormGroup>
+                  {/* FORMULARIO DEL ELEMENTO A ENTREGAR*/}
+
+                  {inputDisp.map((input, index) => {
+                    return (
+                      <div key={index}>
+                        <FormGroup>
+                          <Row>
+                            <Col md={3}>
+                              <Label for="exampleAddress">Equipo: </Label>
+                              <Input className="input__crear"
+                                name='equipo'
+                                value={input.equipo}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+
+                            <Col md={2}>
+                              <Label for="exampleAddress">Marca: </Label>
+                              <Input className="input__crear"
+                                name='marca'
+                                value={input.marca}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                            <Col md={2}>
+                              <Label for="exampleAddress">Modelo</Label>
+                              <Input className="input__crear"
+                                name='modelo'
+                                value={input.modelo}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                            <Col md={2}>
+                              <Label for="exampleAddress">Serial</Label>
+                              <Input className="input__crear"
+                                name='serial'
+                                value={input.serial}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                            <Col md={3}>
+                              <Label for="exampleAddress">Placa</Label>
+                              <Input className="input__crear"
+                                name='placa'
+                                value={input.placa}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                          </Row>
+                        </FormGroup>
+                      </div>
+                    )
+                  })}
+
+
+
+                  {/* ENDS */}
                   <FormGroup  >
                     <div>
                       <Row >
@@ -263,10 +293,11 @@ useEffect(() => {
               </div>
             </ToastBody>
             <Link to={'/'} className='btn btn-info'>Volver</Link>
+            <button onClick={addFields}>Agg Dispositivo</button>
           </div>
         </Toast>
       </div >
-  
+
     </>
 
   )

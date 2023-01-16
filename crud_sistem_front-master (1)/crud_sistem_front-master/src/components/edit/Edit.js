@@ -19,12 +19,12 @@ const Edit = () => {
   const [consecutivo, setConsecutivo] = useState('');
   const [n_consecutivo, setN_consecutivo] = useState('');
   const [area_envia, setArea_envia] = useState('');
-  const [equipo, setEquipo] = useState('');
-  const [marca, setMarca] = useState('');
-  const [modelo, setModelo] = useState('');
-  const [serial, setSerial] = useState('');
-  const [placa, setPlaca] = useState('');
-  const navigate = useNavigate()
+  const [equipos, setEquipos] = useState([]);
+  const [inputDisp, setInputDisp] = useState([{ equipo: '', marca: '', modelo: '', serial: '', placa: '' }]);
+
+  const [equipoM, setEquipoM] = useState([]);
+
+  
   
   const {id} = useParams()
 
@@ -43,18 +43,18 @@ const Edit = () => {
         consecutivo: consecutivo,
         n_consecutivo: n_consecutivo,
         area_envia: area_envia,
-        equipo: equipo,
-        marca: marca,
-        modelo: modelo,
-        serial: serial,
-        placa: placa
-    })
+        equipos: inputDisp,
+
+      })
     navigate('/')
   }
 
   useEffect(() => {
     getOrderById()
+
   }, []);
+
+
 
 
   //Convertir las iniciasles a el consecutivo 
@@ -87,12 +87,23 @@ useEffect(() => {
     setConsecutivo(res.data.consecutivo)
     setN_consecutivo(res.data.n_consecutivo)
     setArea_envia(res.data.area_envia)
-    setEquipo(res.data.equipo)
-    setMarca(res.data.marca)
-    setModelo(res.data.modelo)
-    setSerial(res.data.serial)
-    setPlaca(res.data.placa)
+    setEquipos(res.data.equipos) 
+
+    
   }
+
+  const handleFormChange = (index, event) => {
+    let data = [...inputDisp];
+    data[index][event.target.name] = event.target.value;
+    setInputDisp(data);
+  }
+
+  const addFields = () => {
+    let newfield = { equipo: '', marca: '' }
+    setInputDisp([...inputDisp, newfield])
+  }
+
+
   
   return (
     <>
@@ -167,7 +178,58 @@ useEffect(() => {
                         type='text' />
                     </Col>
                   </Row>
-                  <FormGroup>
+                  {
+                    equipos.map((equipoL, index) => (
+                      // <label>Marca :{equipoL.equipo}</label>
+
+                      <FormGroup key={index}>
+                          <Row>
+                            <Col md={3}>
+                              <Label for="exampleAddress">Equipo: </Label>
+                              <Input className="input__crear"
+                                name='equipo'
+                                value={equipoL.equipo}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+
+                            <Col md={2}>
+                              <Label for="exampleAddress">Marca: </Label>
+                              <Input className="input__crear"
+                                name='marca'
+                                value={equipoL.marca}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                            <Col md={2}>
+                              <Label for="exampleAddress">Modelo</Label>
+                              <Input className="input__crear"
+                                name='modelo'
+                                value={equipoL.modelo}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                            <Col md={2}>
+                              <Label for="exampleAddress">Serial</Label>
+                              <Input className="input__crear"
+                                name='serial'
+                                value={equipoL.serial}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                            <Col md={3}>
+                              <Label for="exampleAddress">Placa</Label>
+                              <Input className="input__crear"
+                                name='placa'
+                                value={equipoL.placa}
+                                onChange={event => handleFormChange(index, event)}
+                                type='text' />
+                            </Col>
+                          </Row>
+                        </FormGroup>
+                    ))
+                  }
+                  {/* <FormGroup>
                     <Row>
                       <Col md={3}>
                         <Label for="exampleAddress">Equipo: </Label>
@@ -200,7 +262,7 @@ useEffect(() => {
                           type='text' />
                       </Col>
                     </Row>
-                  </FormGroup>
+                  </FormGroup> */}
                   <FormGroup  >
                     <div>
                       <Row >
